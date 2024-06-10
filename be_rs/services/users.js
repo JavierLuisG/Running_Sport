@@ -60,9 +60,42 @@ var createUserServices = async function (userParam) {
  * asegura que cualquier error será capturado y pasado al reject.
  */
 var getUserByEmailServices = async function (emailParam) {
+    // ToDo: remove when the database implement
     return new Promise((resolve, reject) => {
         try {
             resolve(users[1]);
+        } catch (error) {
+            reject(error);
+        }
+    })
+};
+
+/**
+ * actualiza un registro por medio del resolve 
+ * 
+ * @returns - promesa según lo que se ejecute en el try-catch
+ * @param emailParam - contiene el email ingresado por el usuario 
+ * @param userParam - contiene los datos a actualizar
+ * @method resolve - se ejecuta cuando la operación es exitosa
+ * @method reject - se ejecuta cuando la operación falló
+ * @description - try-catch para manejar correctamente los casos de éxito y de error,
+ * asegura que cualquier error será capturado y pasado al reject.
+ */
+var updateUserByEmailServices = async function (emailParam, userParam) {
+    // ToDo: remove when the database implement
+    return new Promise((resolve, reject) => {
+        try {
+            var userUpdate = {}; // crear un objeto
+            // valores a actualizar
+            userUpdate.id = users[0].id;
+            userUpdate.firstname = userParam.firstname;
+            userUpdate.lastname = userParam.lastname;
+            userUpdate.birthday = users[0].birthDate
+            userUpdate.email = users[0].email;
+            userUpdate.phone = userParam.phone;
+            userUpdate.status = users[0].status;
+            userUpdate.role = users[0].role;
+            resolve(userUpdate); // devuelve el objeto creado 
         } catch (error) {
             reject(error);
         }
@@ -73,5 +106,6 @@ var getUserByEmailServices = async function (emailParam) {
 module.exports = {
     getAllUsersServices,
     createUserServices,
-    getUserByEmailServices
+    getUserByEmailServices,
+    updateUserByEmailServices
 };

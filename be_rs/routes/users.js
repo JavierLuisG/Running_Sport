@@ -59,8 +59,25 @@ var getUserByEmailController = function (req, res, next) {
     });
 };
 
+/**
+ * Controlador para actualizar un registro según el parametro
+ * 
+ * @param {Object} req - el objeto de solicitud de Express.
+ * @param {Object} req.params.email - el email del registro.
+ * @param {Object} req.body - los datos del registro a actualizar, proporcionados en el cuerpo de la solicitud.
+ * @param {Object} res - el objeto de respuesta de Express.
+ * @param {Function} next - la función middleware de Express para pasar el control al siguiente manejador.
+ * @description - si la consulta es exitosa, responde con un estado 200 y los datos del registro
+ * y si ocurre un error, pasa el error al siguiente middleware.
+ */
 var updateUserByEmailController = function (req, res, next) {
-  res.send('respond with a resource');
+  userService.updateUserByEmailServices(req.params.email, req.body)
+    // ToDo: will change when the database is implemented
+    .then((response) => {
+      res.status(200).send(response);
+    }).catch((error) => {
+      next(error);
+    });
 };
 
 var deleteUserByEmail = function (req, res, next) {
