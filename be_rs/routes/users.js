@@ -80,8 +80,23 @@ var updateUserByEmailController = function (req, res, next) {
     });
 };
 
-var deleteUserByEmail = function (req, res, next) {
-  res.send('respond with a resource');
+/**
+ * Controlador para actualizar el estado a false del registro 
+ * 
+ * @param {Object} req - el objeto de solicitud de Express.
+ * @param {Object} req.params.email - params: busca el parametro que se le indique, en este caso 'email'
+ * @param {Object} res - el objeto de respuesta de Express.
+ * @method res.sendStatus - Se utiliza porque solamente se va a enviar la petición, 204: no hay contenido dentro del body de ese response.
+ * @param {Function} next - la función middleware de Express para pasar el control al siguiente manejador.
+ * @description - si la consulta es exitosa, responde con un estado 204 y si ocurre un error, pasa el error al siguiente middleware.
+ */
+var deleteUserByEmailController = function (req, res, next) {
+  userService.deleteUserByEmailServices(req.params.email)
+    .then(() => {
+      res.sendStatus(204);
+    }).catch((error) => {
+      next(error);
+    });
 };
 
 /** 
@@ -93,6 +108,6 @@ router.get('/', getAllUsersController);
 router.post('/create', createUserController);
 router.get('/:email/detail', getUserByEmailController);
 router.put('/:email/update', updateUserByEmailController);
-router.delete('/:email/delete', deleteUserByEmail);
+router.delete('/:email/delete', deleteUserByEmailController);
 
 module.exports = router;

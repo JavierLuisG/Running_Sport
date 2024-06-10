@@ -102,10 +102,32 @@ var updateUserByEmailServices = async function (emailParam, userParam) {
     })
 };
 
+/**
+ * elimina un registro por medio del resolve 
+ * 
+ * @returns - promesa según lo que se ejecute en el try-catch
+ * @param emailParam - contiene el email ingresado por el usuario 
+ * @method resolve - se ejecuta cuando la operación es exitosa, no hay contenido dentro del body de ese response
+ * @method reject - se ejecuta cuando la operación falló
+ * @description - try-catch para manejar correctamente los casos de éxito y de error,
+ * asegura que cualquier error será capturado y pasado al reject.
+ */
+var deleteUserByEmailServices = async function (emailParam) {
+    // ToDo: remove when the database implement
+    return new Promise((resolve, reject) => {
+        try {
+            resolve();
+        } catch (error) {
+            reject(error);
+        }
+    })
+};
+
 // como este script no es visible, para exportar un módulo dentro de JS se usa el patrón factory
 module.exports = {
     getAllUsersServices,
     createUserServices,
     getUserByEmailServices,
-    updateUserByEmailServices
+    updateUserByEmailServices,
+    deleteUserByEmailServices
 };
