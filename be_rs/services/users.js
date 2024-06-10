@@ -11,8 +11,8 @@ var users = require("../mocks/users.json"); // importar el archivo con JSON de u
  * 
  * @returns - promesa según lo que se ejecute en el try-catch
  * @param - no necesita parámetros 
- * @method resolve - se ejecuta cuando la operacion es exitosa
- * @method reject - se ejecuta cuando la operacion falló
+ * @method resolve - se ejecuta cuando la operación es exitosa
+ * @method reject - se ejecuta cuando la operación falló
  * @description - try-catch para manejar correctamente los casos de éxito y de error,
  * asegura que cualquier error será capturado y pasado al reject.
  */
@@ -33,8 +33,8 @@ var getAllUsersServices = async function () {
  * 
  * @returns - promesa según lo que se ejecute en el try-catch
  * @param userParam - contiene los datos ingresados por el usuario 
- * @method resolve - se ejecuta cuando la operacion es exitosa
- * @method reject - se ejecuta cuando la operacion falló
+ * @method resolve - se ejecuta cuando la operación es exitosa
+ * @method reject - se ejecuta cuando la operación falló
  * @description - try-catch para manejar correctamente los casos de éxito y de error,
  * asegura que cualquier error será capturado y pasado al reject.
  */
@@ -49,8 +49,29 @@ var createUserServices = async function (userParam) {
     })
 };
 
+/**
+ * obtiene un registro por medio del resolve 
+ * 
+ * @returns - promesa según lo que se ejecute en el try-catch
+ * @param emailParam - contiene el email ingresado por el usuario 
+ * @method resolve - se ejecuta cuando la operación es exitosa
+ * @method reject - se ejecuta cuando la operación falló
+ * @description - try-catch para manejar correctamente los casos de éxito y de error,
+ * asegura que cualquier error será capturado y pasado al reject.
+ */
+var getUserByEmailServices = async function (emailParam) {
+    return new Promise((resolve, reject) => {
+        try {
+            resolve(users[1]);
+        } catch (error) {
+            reject(error);
+        }
+    })
+};
+
 // como este script no es visible, para exportar un módulo dentro de JS se usa el patrón factory
 module.exports = {
     getAllUsersServices,
-    createUserServices
+    createUserServices,
+    getUserByEmailServices
 };
