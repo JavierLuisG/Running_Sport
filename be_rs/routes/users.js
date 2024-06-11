@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var userService = require("../services/users");
+var verifyToken = require("../middlewares/authMiddleware") // importación del verifyToken para agregarlo entre las rutas
 
 /** Por cada endpoint se realiza una función que luego será enrutada con router */
 
@@ -99,15 +100,36 @@ var deleteUserByEmailController = function (req, res, next) {
     });
 };
 
+/**
+ * Controlador para autenticar el usuario y generar un token JWT.
+ * 
+ * @param {Object} req - El objeto de solicitud de Express.
+ * @param {Object} req.body - Los datos del usuario para autenticar, proporcionados en el cuerpo de la solicitud.
+ * @param {Object} res - El objeto de respuesta de Express.
+ * @param {Function} next - La función middleware de Express para pasar el control al siguiente manejador.
+ * @returns {Promise} - Una promesa que se resuelve con los datos del usuario autenticado y un token JWT, o se rechaza con un error.
+ * @description - Si la autenticación es exitosa, devuelve los datos del usuario y un token JWT en la respuesta. Si hay un error, pasa el error al siguiente middleware.
+ */
+var userAuthenticateController = function (req, res, next) {
+  userService.userAuthenticateServices(req.body)
+    .then((response) => {
+      res.json(response);
+    }).catch((error) => {
+      next(error);
+    });
+};
+
 /** 
  * Rutas donde se realizará la operación, tener en cuenta:
- * el verbo (get, post, put, delete) 
- * el parametro '/:email...' cuando está especificado
- * */
-router.get('/', getAllUsersController);
+ *  el verbo (get, post, put, delete) 
+ *  el parametro '/:email...' cuando está especificado
+ * Se agrega verifyToken en donde se quiere que haya verificación del token
+ */
+router.get('/', verifyToken, getAllUsersController);
 router.post('/create', createUserController);
-router.get('/:email/detail', getUserByEmailController);
-router.put('/:email/update', updateUserByEmailController);
-router.delete('/:email/delete', deleteUserByEmailController);
+router.get('/:email/detail', verifyToken, getUserByEmailController);
+router.put('/:email/update', verifyToken, updateUserByEmailController);
+router.delete('/:email/delete', verifyToken, deleteUserByEmailController);
+router.post('/authenticate', userAuthenticateController);
 
 module.exports = router;

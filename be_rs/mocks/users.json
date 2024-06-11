@@ -7,7 +7,8 @@
         "email": "pepito@gmail.com",
         "phone": "0987654321",
         "status": true,
-        "role": "admin"
+        "role": "admin",
+        "password": "asdf123"
     },
     {
         "id": 234,
@@ -17,6 +18,7 @@
         "email": "fulano@gmail.com",
         "phone": "1234567890",
         "status": true,
-        "role": "client"
+        "role": "client",
+        "password": "123asdf"
     }
 ]

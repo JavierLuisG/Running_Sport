@@ -1,5 +1,7 @@
 var Promise = require("bluebird"); // importar bluebird para usar las funcionalidades de promesas
 var users = require("../mocks/users.json"); // importar el archivo con JSON de users para realizar pruebas
+var jwt = require("jsonwebtoken"); // libreria para poder hacer la firma
+var config = require("../middlewares/config.json"); // traer el secret para hacer la firma del código
 
 /** 
  * por cada función en router, se realizará una función asíncrona que devuelve una promesa 
@@ -123,11 +125,47 @@ var deleteUserByEmailServices = async function (emailParam) {
     })
 };
 
+/**
+ * Servicio para autenticar a un usuario verificando credenciales de email y password.
+ *
+ * @param {Object} userParam - El objeto que contiene las credenciales del usuario.
+ * @param {string} userParam.email - El correo electrónico del usuario que se está autenticando.
+ * @param {string} userParam.password - La contraseña del usuario que se está autenticando.
+ * @returns {Promise<Object>} - Una promesa que se resuelve con los datos del usuario autenticado, incluido un token JWT.
+ * @throws {Error} - Lanza un error si la autenticación falla.
+ */
+var userAuthenticateServices = async function (userParam) {
+    return new Promise((resolve, reject) => {
+        //ToDo: remove when the DB implemented
+        var userAuth = users[0]; // Simula la autenticación usando un usuario ficticio del arreglo `users`
+        // Si el usuario no se encuentra o la contraseña con el email es incorrecta, rechaza la promesa
+        if (!userAuth || userAuth.email !== userParam.email || userAuth.password !== userParam.password) {
+            return reject(new Error("Error en la autenticación, pilas ahí"));
+        }
+        // El payload del token contiene los datos del usuario
+        const payload = {
+            sub: userAuth.id,
+            firstname: userAuth.firstname,
+            lastname: userAuth.lastname,
+            birthDate: userAuth.birthDate,
+            email: userAuth.email,
+            phone: userAuth.phone,
+            locale: 'CO',
+            roles: userAuth.role
+        };
+        // Genera un token JWT para el usuario autenticado
+        userAuth.token = jwt.sign(payload, config.secret, { expiresIn: '60m' });
+        // resuelve la promesa con el usuario registrado
+        resolve(userAuth);
+    });
+};
+
 // como este script no es visible, para exportar un módulo dentro de JS se usa el patrón factory
 module.exports = {
     getAllUsersServices,
     createUserServices,
     getUserByEmailServices,
     updateUserByEmailServices,
-    deleteUserByEmailServices
+    deleteUserByEmailServices,
+    userAuthenticateServices
 };
