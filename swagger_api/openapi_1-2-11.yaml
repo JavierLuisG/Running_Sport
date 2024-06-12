@@ -404,7 +404,7 @@ components:
         lastname:
           type: string
           description: User lastname or surname
-        birthDate:
+        birthdate:
           type: string
           description: User date of birth
         email:
@@ -431,6 +431,9 @@ components:
         lastname:
           type: string
           description: User lastname or surname
+        birthdate:
+          type: string
+          description: User date of birth
         phone:
           type: string
           description: User phone, 10 digits
@@ -452,6 +455,9 @@ components:
         lastname:
           type: string
           description: User lastname or surname
+        birthdate:
+          type: string
+          description: User date of birth
         phone:
           type: string
           description: User phone, 10 digits
@@ -498,6 +504,9 @@ components:
         lastname:
           type: string
           description: User lastname or surname
+        birthdate:
+          type: string
+          description: User date of birth
         phone:
           type: string
           description: User phone, 10 digits
