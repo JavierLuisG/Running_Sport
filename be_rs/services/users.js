@@ -92,7 +92,7 @@ var updateUserByEmailServices = async function (emailParam, userParam) {
             userUpdate.id = users[0].id;
             userUpdate.firstname = userParam.firstname;
             userUpdate.lastname = userParam.lastname;
-            userUpdate.birthday = users[0].birthDate
+            userUpdate.birthdate = users[0].birthdate
             userUpdate.email = users[0].email;
             userUpdate.phone = userParam.phone;
             userUpdate.status = users[0].status;
@@ -147,7 +147,7 @@ var userAuthenticateServices = async function (userParam) {
             sub: userAuth.id,
             firstname: userAuth.firstname,
             lastname: userAuth.lastname,
-            birthDate: userAuth.birthDate,
+            birthdate: userAuth.birthdate,
             email: userAuth.email,
             phone: userAuth.phone,
             locale: 'CO',
