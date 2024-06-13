@@ -46,18 +46,16 @@ var createUserController = function (req, res, next) {
  * @param {Object} req - el objeto de solicitud de Express.
  * @param {Object} req.params.email - el email del registro.
  * @param {Object} res - el objeto de respuesta de Express.
- * @param {Function} next - la función middleware de Express para pasar el control al siguiente manejador.
  * @description - si la consulta es exitosa, responde con un estado 200 y los datos del registro
- * y si ocurre un error, pasa el error al siguiente middleware.
+ * y si ocurre un error, el 404
  */
-var getUserByEmailController = function (req, res, next) {
-  userService.getUserByEmailServices(req.params.email)
-    // ToDo: will change when the database is implemented
-    .then((response) => {
-      res.status(200).send(response);
-    }).catch((error) => {
-      next(error);
-    });
+var getUserByEmailController = async function (req, res, next) {
+  try {
+    const response = await userService.getUserByEmailServices(req.params.email);
+    res.status(200).json(response);
+  } catch (error) {
+    res.status(404).json(error);
+  }
 };
 
 /**

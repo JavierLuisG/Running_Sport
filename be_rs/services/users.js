@@ -13,7 +13,7 @@ var User = db.User; // acceder al modelo users desde la instancia de la base de 
  */
 
 /**
- * obtiene todos los registros por medio del resolve que se encuentren activos (status: true)
+ * obtiene todos los registros que se encuentren activos (status: true)
  * 
  * @returns {Promise<Array>} - promesa que se resuelve con una lista de usuarios activos.
  * @param - no necesita parámetros
@@ -52,17 +52,21 @@ var createUserServices = async function (userParam) {
 };
 
 /**
- * obtiene un registro por medio del resolve 
+ * obtiene un registro que se encuentre activo por medio del email
  * 
- * @returns - promesa según lo que se ejecute en el try-catch
- * @param emailParam - contiene el email ingresado por el usuario 
- * @method resolve - se ejecuta cuando la operación es exitosa
- * @method reject - se ejecuta cuando la operación falló
- * @description - try-catch para manejar correctamente los casos de éxito y de error,
- * asegura que cualquier error será capturado y pasado al reject.
+ * @returns - promesa que se resuelve con el usuario activo que posea el email
+ * @param emailParam - contiene el email ingresado por el usuario
+ * @method await - se utiliza para esperar a que una promesa se resuelva o se rechace.
+ * @method select - indicar cuales campos pueden aparecer
+ * @method exec - ejecutar la consulta y obtener los resultados 
  */
 var getUserByEmailServices = async function (emailParam) {
-    return User.findOne({ email: emailParam, status: true }).select("id email firstname lastname birthdate phone status role").exec();
+    var userByEmail = await User.findOne({ email: emailParam, status: true })
+        .select("id email firstname lastname birthdate phone status role").exec();
+    if (!userByEmail) {
+        throw { code: 404, message: "Usuario " + emailParam + " no encontrado" };
+    }
+    return userByEmail;
 };
 
 /**
