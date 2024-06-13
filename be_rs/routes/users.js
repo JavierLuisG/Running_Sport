@@ -11,13 +11,13 @@ var verifyToken = require("../middlewares/authMiddleware") // importación del v
  * @param {Object} req - el objeto de solicitud de Express
  * @param {Object} res - el objeto de respuesta de Express
  */
-var getAllUsersController = function (req, res, next) {
-  userService.getAllUsersServices()
-    .then((response) => {
-      res.json(response);
-    }).catch((error) => {
-      next(error);
-    });
+var getAllUsersController = async function (req, res, next) {
+  try {
+    const response = await userService.getAllUsersServices();
+    res.json(response);
+  } catch (error) {
+    next(error);
+  }
 };
 
 /**

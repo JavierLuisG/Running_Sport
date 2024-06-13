@@ -17,9 +17,16 @@ var User = db.User; // acceder al modelo users desde la instancia de la base de 
  * 
  * @returns {Promise<Array>} - promesa que se resuelve con una lista de usuarios activos.
  * @param - no necesita parámetros
+ * @method await - se utiliza para esperar a que una promesa se resuelva o se rechace.
+ * @method select - indicar cuales campos pueden aparecer
+ * @method exec - ejecutar la consulta y obtener los resultados 
  */
 var getAllUsersServices = async function () {
-    return User.find({ status: true }).select("id email firstname lastname birthdate phone status role").exec();
+    try {
+        return await User.find({ status: true }).select("id email firstname lastname birthdate phone status role").exec();
+    } catch (error) {
+        throw new Error("Error al obtener usuarios activos ", error.message);
+    }
 };
 
 /**
@@ -55,14 +62,7 @@ var createUserServices = async function (userParam) {
  * asegura que cualquier error será capturado y pasado al reject.
  */
 var getUserByEmailServices = async function (emailParam) {
-    // ToDo: remove when the database implement
-    return new Promise((resolve, reject) => {
-        try {
-            resolve(users[1]);
-        } catch (error) {
-            reject(error);
-        }
-    })
+    return User.findOne({ email: emailParam, status: true }).select("id email firstname lastname birthdate phone status role").exec();
 };
 
 /**
