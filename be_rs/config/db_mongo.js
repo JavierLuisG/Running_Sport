@@ -17,6 +17,10 @@ main().then((connect) => {
     console.log(err);
 });
 
+/**
+ * Exportar la instancia de la base de datos con los modelos
+*/
 module.exports = {
+    /* instanciar el modelo users.js */
     User: require('../model/users'),
 };

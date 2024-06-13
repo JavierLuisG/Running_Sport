@@ -2,31 +2,24 @@ var Promise = require("bluebird"); // importar bluebird para usar las funcionali
 var users = require("../mocks/users.json"); // importar el archivo con JSON de users para realizar pruebas
 var jwt = require("jsonwebtoken"); // libreria para poder hacer la firma
 var config = require("../middlewares/config.json"); // traer el secret para hacer la firma del código
+var db = require("../config/db_mongo"); // importando la configuración de la base de datos y los modelos definidos
+var User = db.User; // acceder al modelo users desde la instancia de la base de datos
+
+/* ====================================================================================== */
 
 /** 
  * por cada función en router, se realizará una función asíncrona que devuelve una promesa 
- * según la interaccion con los datos 
+ * según la interacción con los datos 
  */
 
 /**
- * obtiene todos los registros por medio del resolve
+ * obtiene todos los registros por medio del resolve que se encuentren activos (status: true)
  * 
- * @returns - promesa según lo que se ejecute en el try-catch
- * @param - no necesita parámetros 
- * @method resolve - se ejecuta cuando la operación es exitosa
- * @method reject - se ejecuta cuando la operación falló
- * @description - try-catch para manejar correctamente los casos de éxito y de error,
- * asegura que cualquier error será capturado y pasado al reject.
+ * @returns {Promise<Array>} - promesa que se resuelve con una lista de usuarios activos.
+ * @param - no necesita parámetros
  */
 var getAllUsersServices = async function () {
-    // ToDo: remove when the database implement
-    return new Promise((resolve, reject) => {
-        try {
-            resolve(users);
-        } catch (error) {
-            reject(error);
-        }
-    })
+    return User.find({ status: true }).select("id email firstname lastname birthdate phone status role").exec();
 };
 
 /**
