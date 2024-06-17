@@ -116,24 +116,26 @@ var updateUserByEmailServices = async function (emailParam, userParam) {
 };
 
 /**
- * elimina un registro por medio del resolve 
- * 
- * @returns - promesa según lo que se ejecute en el try-catch
+ * elimina un registro por medio del cambio de estado, de true a false 
+ *  
+ * @returns {Promise<Object>} - Una promesa que se resuelve con el registro eliminado.
  * @param emailParam - contiene el email ingresado por el usuario 
- * @method resolve - se ejecuta cuando la operación es exitosa, no hay contenido dentro del body de ese response
- * @method reject - se ejecuta cuando la operación falló
- * @description - try-catch para manejar correctamente los casos de éxito y de error,
- * asegura que cualquier error será capturado y pasado al reject.
+ * @method findByIdAndUpdate - dos parametros: (el primero '.id', el segundo 'el objeto con la información a actualizar)
+ * @description - paso a paso:
+ * 1. Obtener el registro por medio del email y status como parametro
+ * 2. Si el registro no existe, lanzar un error 404 (not found)
+ * 3. Cambiar el status a false de la base de datos
+ * 4. Verificar si el registro actualizado no se llevó a cabo, lanzar un error 400 (bad request)
  */
 var deleteUserByEmailServices = async function (emailParam) {
-    // ToDo: remove when the database implement
-    return new Promise((resolve, reject) => {
-        try {
-            resolve();
-        } catch (error) {
-            reject(error);
-        }
-    })
+    var findUser = await User.findOne({ email: emailParam, status: true });
+    if (!findUser) {
+        throw { code: 404, message: "Usuario " + emailParam + " no encontrado" };
+    }
+    var userUpdate = await User.findByIdAndUpdate(findUser.id, { status: false });
+    if (!userUpdate) {
+        throw { code: 400, message: "Error en la eliminación del usuario " + findUser.email };
+    }
 };
 
 /**
