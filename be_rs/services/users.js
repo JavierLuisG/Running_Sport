@@ -34,9 +34,9 @@ var getAllUsersServices = async function () {
  * 
  * @returns - promesa que se resuelve con los datos de un registro recién creado 
  * @param userParam - contiene los datos ingresados por el usuario 
- * @throws {Object} - Un objeto de error con el código 409 si el email existe.
- * @method save - Permite guardar en la base de datos 
- * @description - Paso a paso: 
+ * @throws {Object} - un objeto de error con el código 409 si el email existe.
+ * @method save - permite guardar en la base de datos 
+ * @description - paso a paso: 
  * 1. Obtener el registro por medio del email y status como parametros
  * 2. Si el registro existe, lanzar un error 409 (conflict)
  * 3. Crear una instancia del esquema que se define en 'model/users.js'
@@ -46,7 +46,7 @@ var getAllUsersServices = async function () {
  */
 var createUserServices = async function (userParam) {
     // 1.
-    const findUser = await User.findOne({ email: userParam.email, status: true });
+    var findUser = await User.findOne({ email: userParam.email, status: true });
     // 2.
     if (findUser) {
         throw { code: 409, message: "Conflicto, usuario " + userParam.email + " ya existente" };
@@ -65,7 +65,8 @@ var createUserServices = async function (userParam) {
 /**
  * obtiene un registro que se encuentre activo por medio del email
  * 
- * @returns - promesa que se resuelve con el usuario activo que posea el email
+ * @returns {Promise<Object>} - promesa que se resuelve con el objeto que representa el registro encontrado,
+ * si no se encuentra ningún registro con el email especificado, la promesa se rechaza con un error 404.
  * @param emailParam - contiene el email ingresado por el usuario
  * @method await - se utiliza para esperar a que una promesa se resuelva o se rechace.
  * @method select - indicar cuales campos pueden aparecer
@@ -81,35 +82,37 @@ var getUserByEmailServices = async function (emailParam) {
 };
 
 /**
- * actualiza un registro por medio del resolve 
+ * actualiza el registro si el email está activo
  * 
- * @returns - promesa según lo que se ejecute en el try-catch
+ * @returns {Promise<Object>} - promesa que se resuelve con el objeto que representa el registro actualizado.
+ * Si no se encuentra ningún registro con el email especificado, la promesa se rechaza con un error 404.
+ * Si ocurre un error al actualizar el registro, la promesa se rechaza con un error 400.
  * @param emailParam - contiene el email ingresado por el usuario 
  * @param userParam - contiene los datos a actualizar
- * @method resolve - se ejecuta cuando la operación es exitosa
- * @method reject - se ejecuta cuando la operación falló
- * @description - try-catch para manejar correctamente los casos de éxito y de error,
- * asegura que cualquier error será capturado y pasado al reject.
+ * @method findByIdAndUpdate - dos parametros: (el primero '.id', el segundo 'el objeto con la información a actualizar)
+ * @description - paso a paso: 
+ * 1. Obtener el registro por medio del email y status como parametros
+ * 2. Si el registro no existe, lanzar un error 404 (not found)
+ * 3. Actualizar los datos del registro
+ * 4. Verificar si el registro actualizado contiene un error, lanzar un error 400 (bad request)
+ * 5. Devolver la información del registro actualizado por medio del método 'getUserByEmailServices()'
  */
 var updateUserByEmailServices = async function (emailParam, userParam) {
-    // ToDo: remove when the database implement
-    return new Promise((resolve, reject) => {
-        try {
-            var userUpdate = {}; // crear un objeto
-            // valores a actualizar
-            userUpdate.id = users[0].id;
-            userUpdate.firstname = userParam.firstname;
-            userUpdate.lastname = userParam.lastname;
-            userUpdate.birthdate = users[0].birthdate
-            userUpdate.email = users[0].email;
-            userUpdate.phone = userParam.phone;
-            userUpdate.status = users[0].status;
-            userUpdate.role = users[0].role;
-            resolve(userUpdate); // devuelve el objeto creado 
-        } catch (error) {
-            reject(error);
-        }
-    })
+    // 1.
+    var findUser = await User.findOne({ email: emailParam, status: true });
+    // 2.
+    if (!findUser) {
+        throw { code: 404, message: "Usuario " + emailParam + " no encontrado" };
+    }
+    // 3.
+    var userUpdate = await User.findByIdAndUpdate(findUser.id,
+        { firstname: userParam.firstname, lastname: userParam.lastname, phone: userParam.phone });
+    // 4.
+    if (!userUpdate) {
+        throw { code: 400, message: "Error en la actualización del usuario " + findUser.email };
+    }
+    // 5.
+    return getUserByEmailServices(findUser.email);
 };
 
 /**
