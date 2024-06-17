@@ -30,25 +30,36 @@ var getAllUsersServices = async function () {
 };
 
 /**
- * crea un registro por medio del resolve 
- * (todo: no se creará en puebas, se traerá un registro. Solo se estructura la función)
+ * crea un registro si el email no se encuentra activo 
  * 
- * @returns - promesa según lo que se ejecute en el try-catch
+ * @returns - promesa que se resuelve con los datos de un registro recién creado 
  * @param userParam - contiene los datos ingresados por el usuario 
- * @method resolve - se ejecuta cuando la operación es exitosa
- * @method reject - se ejecuta cuando la operación falló
- * @description - try-catch para manejar correctamente los casos de éxito y de error,
- * asegura que cualquier error será capturado y pasado al reject.
+ * @throws {Object} - Un objeto de error con el código 409 si el email existe.
+ * @method save - Permite guardar en la base de datos 
+ * @description - Paso a paso: 
+ * 1. Obtener el registro por medio del email y status como parametros
+ * 2. Si el registro existe, lanzar un error 409 (conflict)
+ * 3. Crear una instancia del esquema que se define en 'model/users.js'
+ * 4. Configurar por default que tenga un 'status: true' y un 'role: client'
+ * 5. ODM, guardar la instancia en la base de datos
+ * 6. Devolver la información del registro creado por medio del método 'getUserByEmailServices()'
  */
 var createUserServices = async function (userParam) {
-    // ToDo: remove when the database implement
-    return new Promise((resolve, reject) => {
-        try {
-            resolve(users[0]);
-        } catch (error) {
-            reject(error);
-        }
-    })
+    // 1.
+    const findUser = await User.findOne({ email: userParam.email, status: true });
+    // 2.
+    if (findUser) {
+        throw { code: 409, message: "Conflicto, usuario " + userParam.email + " ya existente" };
+    }
+    // 3.
+    var userInstance = new User(userParam);
+    // 4.
+    userInstance.status = true;
+    userInstance.role = 'client';
+    // 5.
+    await userInstance.save();
+    // 6.
+    return getUserByEmailServices(userParam.email);
 };
 
 /**

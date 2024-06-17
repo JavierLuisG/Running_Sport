@@ -26,18 +26,16 @@ var getAllUsersController = async function (req, res, next) {
  * @param {Object} req - el objeto de solicitud de Express.
  * @param {Object} req.body - los datos del registro a crear, proporcionados en el cuerpo de la solicitud.
  * @param {Object} res - el objeto de respuesta de Express.
- * @param {Function} next - la función middleware de Express para pasar el control al siguiente manejador.
  * @description - si la creación es exitosa, responde con un estado 201 y los datos del nuevo registro 
- * y si ocurre un error, pasa el error al siguiente middleware.
+ * y si ocurre un error, el 409.
  */
-var createUserController = function (req, res, next) {
-  userService.createUserServices(req.body)
-    // ToDo: will change when the database is implemented
-    .then((response) => {
-      res.status(201).send(response);
-    }).catch((error) => {
-      next(error);
-    });
+var createUserController = async function (req, res, next) {
+  try {
+    const response = await userService.createUserServices(req.body);
+    res.status(201).json(response);
+  } catch (error) {
+    res.status(409).json(error);
+  }
 };
 
 /**
