@@ -26,4 +26,10 @@ app.use('/', indexRouter);
 // for users
 app.use((api + version + usersPath), usersRouter);
 
+// Middleware de manejo de errores
+app.use((err, req, res, next) => {
+    // se ejecuta si el error capturado no corresponde a los especificados
+    res.status(err.code || 500).json({ code: "500", message: err.message || 'Internal Server Error' });
+});
+
 module.exports = app;
