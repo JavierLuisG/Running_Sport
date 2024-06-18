@@ -128,11 +128,15 @@ var updateUserByEmailServices = async function (emailParam, userParam) {
  * 4. Verificar si el registro actualizado no se llevó a cabo, lanzar un error 400 (bad request)
  */
 var deleteUserByEmailServices = async function (emailParam) {
+    // 1.
     var findUser = await User.findOne({ email: emailParam, status: true });
+    // 2.
     if (!findUser) {
         throw { code: 404, message: "Usuario " + emailParam + " no encontrado" };
     }
+    // 3.
     var userUpdate = await User.findByIdAndUpdate(findUser.id, { status: false });
+    // 4.
     if (!userUpdate) {
         throw { code: 400, message: "Error en la eliminación del usuario " + findUser.email };
     }
@@ -145,32 +149,53 @@ var deleteUserByEmailServices = async function (emailParam) {
  * @param {string} userParam.email - El correo electrónico del usuario que se está autenticando.
  * @param {string} userParam.password - La contraseña del usuario que se está autenticando.
  * @returns {Promise<Object>} - Una promesa que se resuelve con los datos del usuario autenticado, incluido un token JWT.
- * @throws {Error} - Lanza un error si la autenticación falla.
+ * @throws {Error} - lanza un error si la autenticación falla.
+ * @method jwt.sing - utilizado para firmar o crear un token JWT. Toma tres parámetros:
+ * 1- Payload: objeto que contiene la información que se desea incluir en el token. 
+ * 2- Secret (Clave secreta): Es una cadena secreta que se utiliza para firmar el token, para verificar la autenticidad del token
+ * 3- Options (Opciones): objeto que contiene diversas opciones para personalizar el token, como el tiempo de expiración 'expiresIn'
+ * @description - Paso a paso:
+ * 1. Obtener el registro por medio del email, password y status como parametros
+ * 2. Si el registro o las credenciales no existen, lanzar un error 400 (bad request)
+ * 3. Si existe el usuario se identifica como usuario autenticado
+ * 4. Creación del payload del token que contiene los datos del usuario
+ * 5. Genera un token JWT para el registro autenticado con cierta información y configuración.
+ * 6. Devuelve la información del registro autenticado junto con el token JWT.
  */
 var userAuthenticateServices = async function (userParam) {
-    return new Promise((resolve, reject) => {
-        //ToDo: remove when the DB implemented
-        var userAuth = users[0]; // Simula la autenticación usando un usuario ficticio del arreglo `users`
-        // Si el usuario no se encuentra o la contraseña con el email es incorrecta, rechaza la promesa
-        if (!userAuth || userAuth.email !== userParam.email || userAuth.password !== userParam.password) {
-            return reject(new Error("Error en la autenticación, pilas ahí"));
-        }
-        // El payload del token contiene los datos del usuario
-        const payload = {
-            sub: userAuth.id,
-            firstname: userAuth.firstname,
-            lastname: userAuth.lastname,
-            birthdate: userAuth.birthdate,
-            email: userAuth.email,
-            phone: userAuth.phone,
-            locale: 'CO',
-            roles: userAuth.role
-        };
-        // Genera un token JWT para el usuario autenticado
-        userAuth.token = jwt.sign(payload, config.secret, { expiresIn: '60m' });
-        // resuelve la promesa con el usuario registrado
-        resolve(userAuth);
-    });
+    // 1.
+    var findUser = await User.findOne({ email: userParam.email, password: userParam.password, status: true });
+    // 2.
+    if (!findUser || findUser.email !== userParam.email || findUser.password !== userParam.password) {
+        throw { code: 400, message: "Error en la autenticación, verificar la información ingresada" };
+    }
+    // 3.
+    var userAuth = {
+        id: findUser.id,
+        firstname: findUser.firstname,
+        lastname: findUser.lastname,
+        birthdate: findUser.birthdate,
+        email: findUser.email,
+        phone: findUser.phone,
+        role: findUser.role,
+        status: findUser.status,
+        password: findUser.password
+    };
+    // 4.
+    const payload = {
+        sub: userAuth.id,
+        firstname: userAuth.firstname,
+        lastname: userAuth.lastname,
+        birthdate: userAuth.birthdate,
+        email: userAuth.email,
+        phone: userAuth.phone,
+        locale: 'CO',
+        roles: userAuth.role
+    };
+    // 5.
+    userAuth.token = jwt.sign(payload, config.secret, { expiresIn: '60m' });
+    // 6.
+    return userAuth;
 };
 
 // como este script no es visible, para exportar un módulo dentro de JS se usa el patrón factory
