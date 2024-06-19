@@ -1,0 +1,24 @@
+[
+    {
+        "id": 123,
+        "firstname": "Pepito",
+        "lastname": "Perez",
+        "birthDate": "1999-12-24",
+        "email": "pepito@gmail.com",
+        "phone": "0987654321",
+        "status": true,
+        "role": "admin",
+        "password": "asdf123"
+    },
+    {
+        "id": 234,
+        "firstname": "Fulano",
+        "lastname": "Paez",
+        "birthDate": "1998-11-23",
+        "email": "fulano@gmail.com",
+        "phone": "1234567890",
+        "status": true,
+        "role": "client",
+        "password": "123asdf"
+    }
+]
